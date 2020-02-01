@@ -15,11 +15,11 @@ app.use(express.json());
 
 // Basic route that sends the user first to the AJAX Page
 app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../../index.html"));
+    res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "../../notes.html"));
+    res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
 // Displays all notes
@@ -61,9 +61,9 @@ app.post("/api/notes", function (req, res) {
 
 // Starts the server to begin listening
 // =============================================================
-// app.listen(PORT, function () {
-//     console.log("App listening on PORT " + PORT);
-// });
 app.listen(PORT, function () {
-    console.log("Server listening on: http://localhost:" + PORT);
+    console.log("App listening on PORT " + PORT);
 });
+// app.listen(PORT, function () {
+//     console.log("Server listening on: http://localhost:" + PORT);
+// });
