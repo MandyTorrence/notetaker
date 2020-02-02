@@ -1,7 +1,6 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
-var favicon = require("./public/assets/images/noteFavIcon.png");
 var notesInfo = require("./db/db.json");
 
 var app = express();
