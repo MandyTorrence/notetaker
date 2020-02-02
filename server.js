@@ -15,11 +15,11 @@ app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
-app.get("/notes", function (req, res) {
+app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
-app.post("/api/notes", function (req, res) {
+app.post("/api/notes", (req, res) => {
     let newNote = req.body;
     notesInfo.push(newNote);
     addId();
@@ -29,7 +29,7 @@ app.post("/api/notes", function (req, res) {
     res.redirect('back');
 });
 
-app.delete("/api/notes/:id", function (req, res) {
+app.delete("/api/notes/:id", (req, res) => {
     const deleted = notesInfo.findIndex((i) => i.id == req.params.id);
     notesInfo.splice(deleted, 1);
     reWrite();
@@ -46,10 +46,10 @@ let reWrite = () => {
     fs.writeFile('db.json', newDB, err => { if (err) throw err });
 };
 
-app.get("/api/notes", function (req, res) {
+app.get("/api/notes", (req, res) => {
     return res.json(notesInfo);
 });
 
-app.listen(PORT, function () {
+app.listen(PORT, () => {
     console.log("App listening on PORT " + PORT);
 });
