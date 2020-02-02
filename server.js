@@ -1,69 +1,56 @@
 var express = require("express");
+var fs = require("fs");
 var path = require("path");
 
-// Sets up the Express App
-// =============================================================
-var app = express();
-var PORT = 8080;
+var notesInfo = require("./db/db.json");
 
-// Sets up the Express app to handle data parsing
+var app = express();
+var PORT = process.env.PORT || 8080;
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(__dirname + '/public'));
 
-// Routes
-// =============================================================
 
-// Basic route that sends the user first to the AJAX Page
 app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/index.html"));
+    res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
 app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/notes.html"));
+    res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
-// Displays all notes
-app.get("/api/notes", function (req, res) {
-    return res.json(notes);
-});
-
-// Displays a single note, or returns false
-app.get("/api/notes/:note", function (req, res) {
-    var chosen = req.params.note;
-
-    console.log(chosen);
-
-    for (var i = 0; i < notes.length; i++) {
-        if (chosen === notes[i].routeName) {
-            return res.json(notes[i]);
-        }
-    }
-
-    return res.json(false);
-});
-
-// Create New notes - takes in JSON input
 app.post("/api/notes", function (req, res) {
-    // req.body hosts is equal to the JSON post sent from the user
-    // This works because of our body parsing middleware
-    var newNote = req.body;
+    let newNote = req.body;
+    notesInfo.push(newNote);
+    addId();
+    let save = JSON.stringify(notesInfo);
+    fs.writeFileSync("db.json", save)
 
-    // Using a RegEx Pattern to remove spaces from newNote
-    // You can read more about RegEx Patterns later https://www.regexbuddy.com/regex.html
-    newNote.routeName = newNote.name.replace(/\s+/g, "").toLowerCase();
-
-    console.log(newNote);
-
-    notes.push(newNote);
-
-    res.json(newNote);
+    res.redirect('back');
 });
 
-// Starts the server to begin listening
-// =============================================================
+app.delete("/api/notes/:id", function (req, res) {
+    const deleted = notesInfo.findIndex((i) => i.id == req.params.id);
+    notesInfo.splice(deleted, 1);
+    reWrite();
+    res.json(notesInfo);
+});
+
+function addId() {
+    notesInfo.forEach((element, i) => {
+        element.id = i + 1;
+    });
+};
+let reWrite = () => {
+    let newDB = JSON.stringify(notesInfo);
+    fs.writeFile('db.json', newDB, err => { if (err) throw err });
+};
+
+app.get("/api/notes", function (req, res) {
+    return res.json(notesInfo);
+});
+
 app.listen(PORT, function () {
     console.log("App listening on PORT " + PORT);
 });
-// app.listen(PORT, function () {
-//     console.log("Server listening on: http://localhost:" + PORT);
-// });
